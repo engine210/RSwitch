@@ -1,86 +1,70 @@
-#include <ESP8266WiFi.h>      // 提供Wi-Fi功能的程式庫
-#include <ESP8266WebServer.h>  // 提供網站伺服器功能的程式庫
-#include <ESP8266mDNS.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
 #include "index.h"
 
-const byte LED_PIN1 = 2;
-const byte LED_PIN2 = 0;
+#define OUT_PIN1 2
+#define OUT_PIN2 0
 
 const char ssid[] = "engine_dorm_2.4GHz";
 const char pass[] = "0220!@#$";
 
-ESP8266WebServer server(80);   // 宣告網站伺服器物件與埠號
+ESP8266WebServer server(80); // Run a web server on port 80
 
-// 定義處理首頁請求的自訂函式
+// handaling the request of main page
 void rootRouter() {
   server.send (200, "text/html", PAGE_INDEX );
 }
 
 void setup() {
-  pinMode(LED_PIN1, OUTPUT);
-  pinMode(LED_PIN2, OUTPUT);
-  Serial.begin(115200);  
-  WiFi.begin(ssid, pass);
-  /*
-   *  若要指定IP位址，請自行在此加入WiFi.config()敘述。
-   WiFi.config(IPAddress(192,168,1,50),    // IP位址
-               IPAddress(192,168,1,1),     // 閘道（gateway）位址
-               IPAddress(255,255,255,0));  // 網路遮罩（netmask）
-   */
+  pinMode(OUT_PIN1, OUTPUT);
+  pinMode(OUT_PIN2, OUTPUT);
+  Serial.begin(115200);
 
+  // Connecting to wifi
+  WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);   // 等待WiFi連線
+    delay(500);
     Serial.print(".");
   }
   Serial.println("");
   Serial.print("WiFi connected, IP: ");
-  Serial.println(WiFi.localIP());  // 顯示ESP8266裝置的IP位址
-  
-  if (!MDNS.begin("jarvis")) {
-    Serial.println("Error setting up MDNS responder!");
-    while(1) { 
-      delay(1000);
-    }
-  }
-  Serial.println("mDNS responder started");
+  Serial.println(WiFi.localIP());  // print the ip
 
+  // the main page
   server.on ( "/", rootRouter);
-  server.on ( "/index.html", rootRouter);
+  // page for switch 1
   server.on ("/sw1", []() {
      String state = server.arg("led");
      if (state == "ON") {
-         digitalWrite(LED_PIN1, HIGH);
+         digitalWrite(OUT_PIN1, HIGH);
      } else if (state == "OFF") {
-         digitalWrite(LED_PIN1, LOW);
+         digitalWrite(OUT_PIN1, LOW);
      }
      
-     Serial.print("LED_PIN1: ");
+     Serial.print("OUT_PIN1: ");
      Serial.println(state);
   });
-  
+  // page for switch 2
   server.on ("/sw2", []() {
      String state = server.arg("led");
      if (state == "ON") {
-         digitalWrite(LED_PIN2, HIGH);
+         digitalWrite(OUT_PIN2, HIGH);
      } else if (state == "OFF") {
-         digitalWrite(LED_PIN2, LOW);
+         digitalWrite(OUT_PIN2, LOW);
      }
      
-     Serial.print("LED_PIN2: ");
+     Serial.print("OUT_PIN2: ");
      Serial.println(state);
   });
-  
-  server.onNotFound([](){   // 處理「找不到指定路徑」的事件
-  server.send(404, "text/plain", "File NOT found!");
+  // For page not found
+  server.onNotFound([](){
+    server.send(404, "text/plain", "404 NOT found!");
   });
   
   server.begin();
   Serial.println("HTTP server started.");
-  
-  MDNS.setInstanceName("Cubie's ESP8266");
-  MDNS.addService("http", "tcp", 80);
 }
 
 void loop() {
-    server.handleClient();  // 處理用戶連線
+    server.handleClient(); // handaling requests
 }

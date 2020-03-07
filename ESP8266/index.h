@@ -43,51 +43,43 @@ const char PAGE_INDEX[] PROGMEM = R"=====(
       <h4 style="font-family: monospace;">416 Light Control</h4>
       <div class="card">
         <span class="text">Door side</span>
-        <div class="switch">
-          <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-1">
-            <input type="checkbox" id="switch-1" class="mdl-switch__input" onclick="sw1Clicked()">
-            <span class="mdl-switch__label"></span>
-          </label>
-        </div>
-        
+        <button class="mdl-button mdl-js-button mdl-button--fab" onclick="sw1Off()">
+          <i class="material-icons" style="color: white;">power_settings_new</i>
+        </button>
+        <button class="mdl-button mdl-js-button mdl-button--fab" onclick="sw1On()">
+          <i class="material-icons" style="color: white;">wb_incandescent</i>
+        </button>
       </div>
       
       <div class="card">
         <span class="text">Windows side</span>
-        <div class="switch">
-          <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-2">
-            <input type="checkbox" id="switch-2" class="mdl-switch__input" onclick="sw2Clicked()">
-            <span class="mdl-switch__label"></span>
-          </label>
-        </div>
-        
+        <button class="mdl-button mdl-js-button mdl-button--fab" onclick="sw2Off()">
+          <i class="material-icons" style="color: white;">power_settings_new</i>
+        </button>
+        <button class="mdl-button mdl-js-button mdl-button--fab" onclick="sw2On()">
+          <i class="material-icons" style="color: white;">wb_incandescent</i>
+        </button>
       </div>
     </div>
     
     <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
     <script>
-      function sw1Clicked() {
-        var checkBox = document.getElementById("switch-1");
-        if (checkBox.checked == true){
-          console.log("on");
-          $.post("/sw1", {led:"ON"});
-        } else {
-          console.log("off");
-          $.post("/sw1", {led:"OFF"});
-        }
+      function sw1On() {
+        console.log("1on");
+        $.post("/sw1", {led:"ON"});
       }
-      
-      function sw2Clicked() {
-        var checkBox = document.getElementById("switch-2");
-        if (checkBox.checked == true){
-          console.log("on");
-          $.post("/sw2", {led:"ON"});
-        } else {
-          console.log("off");
-          $.post("/sw2", {led:"OFF"});
-        }
+      function sw1Off() {
+        console.log("1off");
+        $.post("/sw1", {led:"OFF"});
       }
-
+      function sw2On() {
+        console.log("2on");
+        $.post("/sw2", {led:"ON"});
+      }
+      function sw2Off() {
+        console.log("2off");
+        $.post("/sw2", {led:"OFF"});
+      }
     </script>
   </body>
 </html>
