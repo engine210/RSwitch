@@ -21,7 +21,7 @@ void setup() {
   Serial.print("WiFi connected, IP: ");
   Serial.println(WiFi.localIP());  // print the ip
   
-  server.on ("/gpio", HTTP_POST, []() {
+  server.on ("/gpio", []() {
     if (server.arg("api_key") == "****") {
       if (server.arg("action") == "ON") {
         digitalWrite(GPIO0, HIGH);
@@ -39,7 +39,7 @@ void setup() {
     }
     
   });
-  server.on ("/gpio0", HTTP_POST, []() {
+  server.on ("/gpio0", []() {
     if (server.arg("api_key") == "****") {
       if (server.arg("action") == "ON") {
         digitalWrite(GPIO0, HIGH);
@@ -51,10 +51,10 @@ void setup() {
         server.send(200, "text/plain", "Wrong command");
       }
     } else {
-      server.send(200, "text/plain", "authentication failed");
+      server.send(200, "text/plain", "Authentication failed");
     }
   });
-  server.on ("/gpio2", HTTP_POST, []() {
+  server.on ("/gpio2", []() {
     if (server.arg("api_key") == "****") {
       if (server.arg("action") == "ON") {
         digitalWrite(GPIO2, HIGH);
@@ -66,7 +66,7 @@ void setup() {
         server.send(200, "text/plain", "Wrong command");
       }
     } else {
-      server.send(200, "text/plain", "authentication failed");
+      server.send(200, "text/plain", "Authentication failed");
     }
   });
   
