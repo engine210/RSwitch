@@ -1,14 +1,14 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-#define OUT_PIN1 2
-#define OUT_PIN2 0
+#define GPIO0 0
+#define GPIO2 2
 
 ESP8266WebServer server(80);
 
 void setup() {
-  pinMode(OUT_PIN1, OUTPUT);
-  pinMode(OUT_PIN2, OUTPUT);
+  pinMode(GPIO0, OUTPUT);
+  pinMode(GPIO2, OUTPUT);
   Serial.begin(115200);
 
   // Connecting to wifi
@@ -21,31 +21,53 @@ void setup() {
   Serial.print("WiFi connected, IP: ");
   Serial.println(WiFi.localIP());  // print the ip
   
-  server.on ("/sw", HTTP_POST, []() {
-    if (server.arg("led") == "ON") {
-      digitalWrite(OUT_PIN1, HIGH);
-      digitalWrite(OUT_PIN2, HIGH);
+  server.on ("/gpio", HTTP_POST, []() {
+    if (server.arg("api_key") == "****") {
+      if (server.arg("action") == "ON") {
+        digitalWrite(GPIO0, HIGH);
+        digitalWrite(GPIO2, HIGH);
+        server.send(200, "application/json", "{\"gpio0\":\"HIGH\",\"gpio2\":\"HIGH\"}");
+      } else if (server.arg("action") == "OFF") {
+        digitalWrite(GPIO0, LOW);
+        digitalWrite(GPIO2, LOW);
+        server.send(200, "application/json", "{\"gpio0\":\"LOW\",\"gpio2\":\"LOW\"}");
+      } else {
+        server.send(200, "text/plain", "Wrong command");
+      }
     } else {
-      digitalWrite(OUT_PIN1, LOW);
-      digitalWrite(OUT_PIN2, LOW);
+      server.send(200, "text/plain", "Authentication failed");
     }
-    server.send(200, "text/plain", "");
+    
   });
-  server.on ("/sw1", HTTP_POST, []() {
-    if (server.arg("led") == "ON") {
-      digitalWrite(OUT_PIN1, HIGH);
+  server.on ("/gpio0", HTTP_POST, []() {
+    if (server.arg("api_key") == "****") {
+      if (server.arg("action") == "ON") {
+        digitalWrite(GPIO0, HIGH);
+        server.send(200, "application/json", "{\"gpio0\":\"HIGH\"}");
+      } else if (server.arg("action") == "OFF") {
+        digitalWrite(GPIO0, LOW);
+        server.send(200, "application/json", "{\"gpio0\":\"LOW\"}");
+      } else {
+        server.send(200, "text/plain", "Wrong command");
+      }
     } else {
-      digitalWrite(OUT_PIN1, LOW);
+      server.send(200, "text/plain", "authentication failed");
     }
-    server.send(200, "text/plain", "");
   });
-  server.on ("/sw2", HTTP_POST, []() {
-    if (server.arg("led") == "ON") {
-      digitalWrite(OUT_PIN2, HIGH);
+  server.on ("/gpio2", HTTP_POST, []() {
+    if (server.arg("api_key") == "****") {
+      if (server.arg("action") == "ON") {
+        digitalWrite(GPIO2, HIGH);
+        server.send(200, "application/json", "{\"gpio2\":\"HIGH\"}");
+      } else if (server.arg("action") == "OFF") {
+        digitalWrite(GPIO2, LOW);
+        server.send(200, "application/json", "{\"gpio2\":\"LOW\"}");
+      } else {
+        server.send(200, "text/plain", "Wrong command");
+      }
     } else {
-      digitalWrite(OUT_PIN2, LOW);
+      server.send(200, "text/plain", "authentication failed");
     }
-    server.send(200, "text/plain", "");
   });
   
   // For page not found
